@@ -1,3 +1,4 @@
+require "refile"
 require "refile/memory/version"
 
 module Refile
