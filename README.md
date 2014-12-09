@@ -1,6 +1,9 @@
 # Refile::Memory
 
-TODO: Write a gem description
+An in-memory backend for [Refile](https://github.com/elabs/refile).
+
+This probably isn't super useful, but it serves as an illustration on how to
+write backends for Refile.
 
 ## Installation
 
@@ -10,22 +13,15 @@ Add this line to your application's Gemfile:
 gem 'refile-memory'
 ```
 
-And then execute:
+Set up Refile to use the memory backend:
 
-    $ bundle
+``` ruby
+Refile.configure do |config|
+  config.cache = Refile::Memory::Backend.new
+  config.store = Refile::Memory::Backend.new
+end
+```
 
-Or install it yourself as:
+## License
 
-    $ gem install refile-memory
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/refile-memory/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+[MIT](License.txt)
