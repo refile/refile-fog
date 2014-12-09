@@ -16,15 +16,7 @@ module Refile
 
         id = @hasher.hash(uploadable)
 
-        contents = ""
-        buffer = "" # reuse the same buffer
-        until uploadable.eof?
-          uploadable.read(Refile.read_chunk_size, buffer)
-          contents << buffer
-        end
-        uploadable.close
-
-        @store[id] = contents
+        @store[id] = uploadable.read
 
         Refile::File.new(self, id)
       end
