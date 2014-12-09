@@ -5,12 +5,10 @@ module Refile
     class Backend
       attr_reader :directory
 
-      def initialize(directory, max_size: nil, hasher: Refile::RandomHasher.new)
+      def initialize(max_size: nil, hasher: Refile::RandomHasher.new)
         @hasher = hasher
-        @directory = directory
         @max_size = max_size
-
-        FileUtils.mkdir_p(@directory)
+        @store = {}
       end
 
       def upload(uploadable)
@@ -18,18 +16,15 @@ module Refile
 
         id = @hasher.hash(uploadable)
 
-        if uploadable.respond_to?(:path) and ::File.exist?(uploadable.path)
-          FileUtils.cp(uploadable.path, path(id))
-        else
-          ::File.open(path(id), "wb") do |file|
-            buffer = "" # reuse the same buffer
-            until uploadable.eof?
-              uploadable.read(Refile.read_chunk_size, buffer)
-              file.write(buffer)
-            end
-            uploadable.close
-          end
+        contents = ""
+        buffer = "" # reuse the same buffer
+        until uploadable.eof?
+          uploadable.read(Refile.read_chunk_size, buffer)
+          contents << buffer
         end
+        uploadable.close
+
+        @store[id] = contents
 
         Refile::File.new(self, id)
       end
@@ -39,33 +34,28 @@ module Refile
       end
 
       def delete(id)
-        FileUtils.rm(path(id)) if exists?(id)
+        @store.delete(id)
       end
 
       def open(id)
-        ::File.open(path(id), "rb")
+        StringIO.new(@store[id])
       end
 
       def read(id)
-        ::File.read(path(id)) if exists?(id)
+        @store[id]
       end
 
       def size(id)
-        ::File.size(path(id)) if exists?(id)
+        @store[id].bytesize if exists?(id)
       end
 
       def exists?(id)
-        ::File.exists?(path(id))
+        @store.has_key?(id)
       end
 
       def clear!(confirm = nil)
         raise ArgumentError, "are you sure? this will remove all files in the backend, call as `clear!(:confirm)` if you're sure you want to do this" unless confirm == :confirm
-        FileUtils.rm_rf(@directory)
-        FileUtils.mkdir_p(@directory)
-      end
-
-      def path(id)
-        ::File.join(@directory, id)
+        @store = {}
       end
     end
   end
