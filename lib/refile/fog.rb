@@ -7,16 +7,13 @@ module Refile
     class Backend
       attr_reader :directory
 
-      def initialize(max_size: nil, prefix: nil, hasher: Refile::RandomHasher.new, **options)
-        @connection = ::Fog::Storage.new(options)
+      def initialize(directory:, max_size: nil, prefix: nil, hasher: Refile::RandomHasher.new, connection: nil, **options)
+        @connection = connection || ::Fog::Storage.new(options)
+        @prefix = prefix
         @hasher = hasher
         @max_size = max_size
 
-        @directory = if prefix
-          @connection.directories.get(prefix) or @connection.directories.create(key: prefix)
-        else
-          @connection
-        end
+        @directory = @connection.directories.new(key: directory)
       end
 
       def upload(uploadable)
@@ -24,7 +21,7 @@ module Refile
 
         id = @hasher.hash(uploadable)
 
-        @directory.files.create(key: id, body: uploadable)
+        @directory.files.create(key: path(id), body: uploadable.read)
 
         Refile::File.new(self, id)
       end
@@ -43,7 +40,7 @@ module Refile
       end
 
       def read(id)
-        file = @directory.files.get(id)
+        file = @directory.files.get(path(id))
         file.body if file
       end
 
@@ -57,12 +54,18 @@ module Refile
       end
 
       def head(id)
-        @directory.files.head(id)
+        @directory.files.head(path(id))
       end
 
       def clear!(confirm = nil)
         raise ArgumentError, "are you sure? this will remove all files in the backend, call as `clear!(:confirm)` if you're sure you want to do this" unless confirm == :confirm
-        @directory.files.each(&:destroy)
+        @directory.files.select { |f| f.key.start_with?(@prefix.to_s) }.each(&:destroy)
+      end
+
+    private
+
+      def path(id)
+        ::File.join(*@prefix, id)
       end
     end
   end
