@@ -1,3 +1,4 @@
+require "fog"
 require "refile"
 require "refile/fog/version"
 
@@ -6,10 +7,16 @@ module Refile
     class Backend
       attr_reader :directory
 
-      def initialize(max_size: nil, hasher: Refile::RandomHasher.new)
+      def initialize(max_size: nil, prefix: nil, hasher: Refile::RandomHasher.new, **options)
+        @connection = ::Fog::Storage.new(options)
         @hasher = hasher
         @max_size = max_size
-        @store = {}
+
+        @directory = if prefix
+          @connection.directories.get(prefix) or @connection.directories.create(key: prefix)
+        else
+          @connection
+        end
       end
 
       def upload(uploadable)
@@ -17,7 +24,7 @@ module Refile
 
         id = @hasher.hash(uploadable)
 
-        @store[id] = uploadable.read
+        @directory.files.create(key: id, body: uploadable)
 
         Refile::File.new(self, id)
       end
@@ -27,28 +34,35 @@ module Refile
       end
 
       def delete(id)
-        @store.delete(id)
+        file = head(id)
+        file.destroy if file
       end
 
       def open(id)
-        StringIO.new(@store[id])
+        StringIO.new(read(id))
       end
 
       def read(id)
-        @store[id]
+        file = @directory.files.get(id)
+        file.body if file
       end
 
       def size(id)
-        @store[id].bytesize if exists?(id)
+        file = head(id)
+        file.content_length if file
       end
 
       def exists?(id)
-        @store.has_key?(id)
+        !!head(id)
+      end
+
+      def head(id)
+        @directory.files.head(id)
       end
 
       def clear!(confirm = nil)
         raise ArgumentError, "are you sure? this will remove all files in the backend, call as `clear!(:confirm)` if you're sure you want to do this" unless confirm == :confirm
-        @store = {}
+        @directory.files.each(&:destroy)
       end
     end
   end
