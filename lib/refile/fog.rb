@@ -1,8 +1,8 @@
 require "refile"
-require "refile/memory/version"
+require "refile/fog/version"
 
 module Refile
-  module Memory
+  module Fog
     class Backend
       attr_reader :directory
 

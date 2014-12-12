@@ -1,14 +1,14 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'refile/memory/version'
+require 'refile/fog/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "refile-memory"
-  spec.version       = Refile::Memory::VERSION
+  spec.name          = "refile-fog"
+  spec.version       = Refile::Fog::VERSION
   spec.authors       = ["Jonas Nicklas"]
   spec.email         = ["jonas.nicklas@gmail.com"]
-  spec.summary       = %q{In memory backend for Refile}
+  spec.summary       = %q{Fog backend for Refile}
   spec.homepage      = ""
   spec.license       = "MIT"
 

@@ -1,24 +1,25 @@
-# Refile::Memory
+# Refile::Fog
 
-An in-memory backend for [Refile](https://github.com/elabs/refile).
+NOTE: Work in Progress!
 
-This probably isn't super useful, but it serves as an illustration on how to
-write backends for Refile.
+An backend for [Refile](https://github.com/elabs/refile) which provides storage
+in multiple cloud storage services via the [Fog](https://github.com/fog/fog)
+cloud services gem.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'refile-memory'
+gem 'refile-fog'
 ```
 
-Set up Refile to use the memory backend:
+Set up Refile to use the fog backend:
 
 ``` ruby
 Refile.configure do |config|
-  config.cache = Refile::Memory::Backend.new
-  config.store = Refile::Memory::Backend.new
+  config.cache = Refile::Fog::Backend.new
+  config.store = Refile::Fog::Backend.new
 end
 ```
 
