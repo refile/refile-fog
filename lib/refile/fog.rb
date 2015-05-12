@@ -5,7 +5,9 @@ require "refile/fog/version"
 module Refile
   module Fog
     class Backend
-      attr_reader :directory
+      extend Refile::BackendMacros
+
+      attr_reader :directory, :max_size
 
       def initialize(directory:, max_size: nil, prefix: nil, hasher: Refile::RandomHasher.new, connection: nil, **options)
         @connection = connection || ::Fog::Storage.new(options)
@@ -16,9 +18,7 @@ module Refile
         @directory = @connection.directories.new(key: directory)
       end
 
-      def upload(uploadable)
-        Refile.verify_uploadable(uploadable, @max_size)
-
+      verify_uploadable def upload(uploadable)
         id = @hasher.hash(uploadable)
 
         @directory.files.create(key: path(id), body: uploadable.read)
