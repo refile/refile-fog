@@ -26,34 +26,34 @@ module Refile
         Refile::File.new(self, id)
       end
 
-      def get(id)
+      verify_id def get(id)
         Refile::File.new(self, id)
       end
 
-      def delete(id)
+      verify_id def delete(id)
         file = head(id)
         file.destroy if file
       end
 
-      def open(id)
+      verify_id def open(id)
         StringIO.new(read(id))
       end
 
-      def read(id)
+      verify_id def read(id)
         file = @directory.files.get(path(id))
         file.body if file
       end
 
-      def size(id)
+      verify_id def size(id)
         file = head(id)
         file.content_length if file
       end
 
-      def exists?(id)
+      verify_id def exists?(id)
         !!head(id)
       end
 
-      def head(id)
+      verify_id def head(id)
         @directory.files.head(path(id))
       end
 
@@ -64,7 +64,7 @@ module Refile
 
     private
 
-      def path(id)
+      verify_id def path(id)
         ::File.join(*@prefix, id)
       end
     end
