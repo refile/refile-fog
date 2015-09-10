@@ -1,6 +1,6 @@
 # Refile::Fog
 
-[![Build Status](https://travis-ci.org/elabs/refile-fog.svg)](https://travis-ci.org/elabs/refile-fog)
+[![Build Status](https://travis-ci.org/refile/refile-fog.svg)](https://travis-ci.org/refile/refile-fog)
 
 A backend for [Refile](https://github.com/elabs/refile) which provides storage
 in multiple cloud storage services via the [Fog](https://github.com/fog/fog)
