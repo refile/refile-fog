@@ -1,4 +1,4 @@
-require "fog"
+require "fog/core"
 require "refile"
 require "refile/fog/version"
 

@@ -18,5 +18,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "refile"
-  spec.add_dependency "fog"
+  spec.add_dependency "fog-core"
 end
