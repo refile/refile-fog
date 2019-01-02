@@ -17,11 +17,22 @@ Add this line to your application's Gemfile:
 gem 'refile-fog'
 ```
 
+You also need to add the storage provider you use.
+
+Example for google storage:
+
+```ruby
+gem 'fog-google'
+gem 'google-api-client', '~> 0.8.6'
+
+```
+
 Set up Refile to use the fog backend:
 
 ``` ruby
 # config/initializers/refile.rb
 
+require "fog/google"
 require "refile/fog"
 
 credentials = {

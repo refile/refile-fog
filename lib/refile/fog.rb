@@ -1,4 +1,6 @@
-require "fog"
+require "fog/core"
+require "fog/json"
+require "fog/xml"
 require "refile"
 require "refile/fog/version"
 

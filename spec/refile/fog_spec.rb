@@ -1,4 +1,5 @@
 require "pry"
+require "fog/aws"
 require "refile/fog"
 require "refile/spec_helper"
 
@@ -21,4 +22,3 @@ RSpec.describe Refile::Fog::Backend do
 
   it_behaves_like :backend
 end
-
